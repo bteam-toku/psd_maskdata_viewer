@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/PsdMaskDataViewer.App/PsdMaskDataViewer.App.csproj" />
+  <Project Path="src/PsdMaskDataViewer.Core/PsdMaskDataViewer.Core.csproj" Id="6dca6163-a0ba-4b79-a565-c66adaa3b60d" />
+</Solution>

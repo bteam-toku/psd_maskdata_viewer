@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts\bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)artifacts\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <FileVersion>0.0.0.1</FileVersion>
+    <Authors>Ryuta.Tokunaga</Authors>
+    <Company>Ryuta.Tokunaga</Company>
+    <Copyright>@2026 Ryuta.Tokunaga</Copyright>
+  </PropertyGroup>
+</Project>
