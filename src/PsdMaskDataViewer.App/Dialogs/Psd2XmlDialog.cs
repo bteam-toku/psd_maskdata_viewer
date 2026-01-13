@@ -103,11 +103,15 @@ namespace PsdMaskDataViewer.App.Dialogs
         /// <param name="e"></param>
         private void BtnPsdPath_Click(object sender, EventArgs e)
         {
+            // 初期パス設定
+            _inputPsdPath = txtPsdPath.Text;
+            var tempPath = string.IsNullOrEmpty(_inputPsdPath) ? Path.GetDirectoryName(Application.ExecutablePath) + @"./" : _inputPsdPath;
+
             // フォルダ選択ダイアログ表示
             FolderBrowserDialog? fbdialog = new()
             {
                 Description = @"入力フォルダの選択",
-                SelectedPath = Path.GetDirectoryName(Application.ExecutablePath) + @"./",
+                SelectedPath = tempPath,
                 ShowNewFolderButton = false
             };
             // 選択されたフォルダを設定
@@ -132,11 +136,15 @@ namespace PsdMaskDataViewer.App.Dialogs
         /// <param name="e"></param>
         private void BtnXmlPath_Click(object sender, EventArgs e)
         {
+            // 初期パス設定
+            _outputXmlPath = txtXmlPath.Text;
+            var tempPath = string.IsNullOrEmpty(_outputXmlPath) ? Path.GetDirectoryName(Application.ExecutablePath) + @"./" : _outputXmlPath;
+
             // フォルダ選択ダイアログ表示
             FolderBrowserDialog? fbdialog = new()
             {
                 Description = @"出力先フォルダの選択",
-                SelectedPath = Path.GetDirectoryName(Application.ExecutablePath) + @"./",
+                SelectedPath = tempPath,
                 ShowNewFolderButton = true
             };
             // 選択されたフォルダを設定
