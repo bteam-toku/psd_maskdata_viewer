@@ -28,11 +28,11 @@ jobs:
       - name: Create Zip
         shell: pwsh
         run: |
-          Compress-Archive -Path "./publish_out/*.exe", "./publish_out/*.json" -DestinationPath "./PsdMaskDataViewer_win-x86.zip"
-
+          Compress-Archive -Path "./publish_out/*.exe", "./publish_out/*.json" -DestinationPath "./PsdMaskDataViewer_${{ github.ref_name }}_win-x86.zip"
+          
       # 3. GitHubのReleasesページにアップロード
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./PsdMaskDataViewer_win-x86.zip
+          files: "./PsdMaskDataViewer_${{ github.ref_name }}_win-x86.zip"
           generate_release_notes: true
