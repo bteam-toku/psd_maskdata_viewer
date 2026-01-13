@@ -21,7 +21,7 @@ jobs:
 
       # 1. パブリッシュ (パスとアーキテクチャを現在の設定に合わせました)
       - name: Publish
-        run: dotnet publish PsdMaskDataViewer.App/PsdMaskDataViewer.App.csproj -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -o ./publish_out
+        run: dotnet publish src/PsdMaskDataViewer.App/PsdMaskDataViewer.App.csproj -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -o ./publish_out
 
       # 2. 必要なものだけを選別してZIPにする
       - name: Create Zip
