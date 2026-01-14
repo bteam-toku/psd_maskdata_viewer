@@ -6,8 +6,8 @@
 
   <PropertyGroup>
     <Version>0.8.0</Version>
-    <InformationalVersion>0.8.0</InformationalVersion>
-    <FileVersion>0.0.0.1</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <FileVersion>0.0.0.2</FileVersion>
     <Authors>Ryuta.Tokunaga</Authors>
     <Company>Ryuta.Tokunaga</Company>
     <Copyright>@2026 Ryuta.Tokunaga</Copyright>
