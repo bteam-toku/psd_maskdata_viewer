@@ -27,7 +27,7 @@ namespace PsdMaskDataViewer.Core.Docker
             sb.Append($"-v '{inputPath}:/app/input' ");
             sb.Append($"-v '{outputPath}:/app/output' ");
             sb.Append($"-v '{currentPath}:/data' ");
-            sb.Append($"{ImageName}:latest --input /app/input --output /app/output");
+            sb.Append($"{RegistryUrl}/{ImageName}:latest --input /app/input --output /app/output");
             return sb.ToString();
         }
     }

@@ -36,9 +36,10 @@ namespace PsdMaskDataViewer.Core.PowerShell
                 StandardErrorEncoding = Encoding.UTF8,
             };
 
+            Process? process = null;
             try
             {
-                using (var process = new Process { StartInfo = startInfo })
+                using (process = new Process { StartInfo = startInfo })
                 {
                     // 出力データ受信時のイベントハンドラを設定
                     process.OutputDataReceived += (sender, e) =>
@@ -72,6 +73,23 @@ namespace PsdMaskDataViewer.Core.PowerShell
                 OnOutputReceived?.Invoke($"EXCEPTION: {ex.Message}");
                 return false;
             }
+            finally
+            {
+                if (process != null)
+                {
+                    try
+                    {
+                        if (!process.HasExited)
+                        {
+                            process.Kill(true);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    process?.Dispose();
+                }
+            }
         }
 
         /// <summary>
@@ -84,9 +102,10 @@ namespace PsdMaskDataViewer.Core.PowerShell
         public virtual bool CanExecute()
         {
             // PowerShellがインストールされているかどうかを確認します。
+            Process? process = null;
             try
             {
-                var process = new Process();
+                process = new Process();
                 process.StartInfo.FileName = "powershell.exe";
                 process.StartInfo.Arguments = "-NoProfile -Command \"$PSVersionTable.PSVersion\"";
                 process.StartInfo.RedirectStandardOutput = true;
@@ -100,6 +119,23 @@ namespace PsdMaskDataViewer.Core.PowerShell
             catch
             {
                 return false;
+            }
+            finally
+            {
+                if (process != null)
+                {
+                    try
+                    {
+                        if (!process.HasExited)
+                        {
+                            process.Kill(true);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    process?.Dispose();
+                }
             }
         }
     }

@@ -60,6 +60,7 @@
             txtPsdPath.Location = new Point(96, 104);
             txtPsdPath.Margin = new Padding(6);
             txtPsdPath.Name = "txtPsdPath";
+            txtPsdPath.ReadOnly = true;
             txtPsdPath.Size = new Size(1229, 42);
             txtPsdPath.TabIndex = 1;
             txtPsdPath.DragDrop += TxtPsdPath_DragDrop;
@@ -86,6 +87,7 @@
             txtXmlPath.Location = new Point(96, 264);
             txtXmlPath.Margin = new Padding(6);
             txtXmlPath.Name = "txtXmlPath";
+            txtXmlPath.ReadOnly = true;
             txtXmlPath.Size = new Size(1229, 42);
             txtXmlPath.TabIndex = 3;
             txtXmlPath.DragDrop += TxtXmlPath_DragDrop;
@@ -94,6 +96,7 @@
             // btnConvert
             // 
             btnConvert.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnConvert.BackColor = SystemColors.Control;
             btnConvert.Font = new Font("Meiryo UI", 9.75F);
             btnConvert.Location = new Point(16, 340);
             btnConvert.Margin = new Padding(6);
@@ -101,7 +104,7 @@
             btnConvert.Size = new Size(1309, 84);
             btnConvert.TabIndex = 4;
             btnConvert.Text = "変換実行（PSD⇒XML）";
-            btnConvert.UseVisualStyleBackColor = true;
+            btnConvert.UseVisualStyleBackColor = false;
             btnConvert.Click += BtnConvert_Click;
             // 
             // labelPsd

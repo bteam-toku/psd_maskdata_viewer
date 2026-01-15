@@ -41,8 +41,6 @@ namespace PsdMaskDataViewer.Core.Docker
 			var sb = new StringBuilder();
 			// docker pullのコマンドを構築します。
 			sb.Append($"docker pull {RegistryUrl}/{ImageName}:latest\n");
-			// docker tagのコマンドを構築します。
-			sb.Append($"docker tag {RegistryUrl}/{ImageName}:latest {ImageName}");
 			return sb.ToString();
 		}
 

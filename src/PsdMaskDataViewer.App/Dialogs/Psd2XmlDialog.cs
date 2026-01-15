@@ -12,6 +12,7 @@ namespace PsdMaskDataViewer.App.Dialogs
         private readonly IPsd2XmlConverter _converter;  // PSD→XML変換インスタンス
         private string? _inputPsdPath;                  // 変換元PSDファイルのフォルダ
         private string? _outputXmlPath;                  // 出力先XMLファイルのフォルダ
+        private bool _canConvertExecute = false;        // 変換実行可能フラグ
 
         //
         // コンストラクタ
@@ -52,6 +53,18 @@ namespace PsdMaskDataViewer.App.Dialogs
             };
         }
 
+        /// <summary>
+        /// ネットワークパス判定
+        /// </summary>
+        /// <param name="path">パス文字列</param>
+        /// <returns>ネットワークパスの場合true</returns>
+        /// <remarks>先頭が "\\" で始まる場合はネットワークパスと判定</remarks>
+        private bool IsNetworkPath(string path)
+        {
+            // ネットワークドライブのパスは "\\" で始まる
+            return path.StartsWith(@"\\") || path.StartsWith("//");
+        }
+
         //
         // publicメソッド
         //
@@ -73,7 +86,12 @@ namespace PsdMaskDataViewer.App.Dialogs
         private void UpdateControlEnabled()
         {
             // 変換実行ボタンの有効/無効設定
-            btnConvert.Enabled = Directory.Exists(_inputPsdPath) && Directory.Exists(_outputXmlPath) && _converter.CanExecute();
+            if (_canConvertExecute == false)
+            {
+                // 変換実行可能フラグがfalseの場合、CanExecute()の結果を取得して設定する
+                _canConvertExecute = _converter.CanExecute();
+            }
+            btnConvert.Enabled = !string.IsNullOrEmpty(_inputPsdPath) && !string.IsNullOrEmpty(_outputXmlPath) && _canConvertExecute;
         }
 
         //
@@ -126,6 +144,23 @@ namespace PsdMaskDataViewer.App.Dialogs
             }
             // ダイアログ破棄
             fbdialog.Dispose();
+
+            // 入力フォルダの存在確認
+            if (Directory.Exists(_inputPsdPath!) == false)
+            {
+                // 入力フォルダが存在しない場合、エラーメッセージを表示して処理を中断する
+                MessageBox.Show(
+                    "入力フォルダが存在しません。入力フォルダのパスを確認してください。",
+                    "エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                // フォルダをクリアしてコントロール状態更新
+                _inputPsdPath = string.Empty;
+                txtPsdPath.Text = _inputPsdPath;
+                UpdateControlEnabled();
+                return;
+            }
+
             // コントロール状態の更新
             UpdateControlEnabled();
         }
@@ -158,6 +193,7 @@ namespace PsdMaskDataViewer.App.Dialogs
                 Properties.Settings.Default.Save();
             }
             fbdialog.Dispose();
+
             // コントロール状態の更新
             UpdateControlEnabled();
         }
@@ -168,7 +204,42 @@ namespace PsdMaskDataViewer.App.Dialogs
         /// <param name="e"></param>
         private async void BtnConvert_Click(object sender, EventArgs e)
         {
-            if (_converter.CanExecute())
+            // 出力先がネットワークドライブの場合、警告ダイアログを表示して文字列を削除する
+            if (IsNetworkPath(_outputXmlPath!))
+            {
+                // 警告ダイアログ表示
+                MessageBox.Show(
+                    "アウトプットフォルダはネットワークドライブ指定はできません。\n出力先フォルダを再選択してください。",
+                    "警告",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                // 文字列をクリアしてコントロール状態更新
+                _outputXmlPath = string.Empty;
+                txtXmlPath.Text = _outputXmlPath;
+                UpdateControlEnabled();
+                return;
+            }
+
+            // 入力元がネットワークドライブの場合、OK/キャンセルダイアログを表示して複製するか確認する
+            if (IsNetworkPath(_inputPsdPath!))
+            {
+                // 確認ダイアログ表示
+                var result = MessageBox.Show(
+                    "入力フォルダがネットワークドライブに指定されています。\nネットワークドライブのPSDファイルを ./input/temp/ に複製します。\n続行しますか？",
+                    "確認",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Question);
+                // 結果判定（OKの場合は変換処理内で複写コマンドを実行する）
+                if (result == DialogResult.Cancel)
+                {
+                    // キャンセルされた場合、処理を中断する
+                    return;
+                }
+            }
+
+            // 変換実行可能かどうかを再確認
+            _canConvertExecute = _converter.CanExecute();
+            if (_canConvertExecute)
             {
                 // 連打防止
                 btnConvert.Enabled = false; // 連打防止のため無効化
@@ -210,10 +281,18 @@ namespace PsdMaskDataViewer.App.Dialogs
                 string[]? input = (string[]?)e.Data.GetData(DataFormats.FileDrop, false);
                 if (input != null && input.Length > 0)
                 {
-                    _inputPsdPath = input[0];
-                    txtPsdPath.Text = _inputPsdPath;
-                    // コントロール状態の更新
-                    UpdateControlEnabled();
+                    // 入力フォルダの存在確認
+                    if (Directory.Exists(input[0]))
+                    {
+                        // 入力フォルダを設定
+                        _inputPsdPath = input[0];
+                        txtPsdPath.Text = _inputPsdPath;
+                        // 設定ファイルへ保存
+                        Properties.Settings.Default.LastInputPath = _inputPsdPath;
+                        Properties.Settings.Default.Save();
+                        // コントロール状態の更新
+                        UpdateControlEnabled();
+                    }
                 }
             }
         }
@@ -239,8 +318,12 @@ namespace PsdMaskDataViewer.App.Dialogs
                 string[]? input = (string[]?)e.Data.GetData(DataFormats.FileDrop, false);
                 if (input != null && input.Length > 0)
                 {
+                    // 出力先フォルダを設定
                     _outputXmlPath = input[0];
                     txtXmlPath.Text = _outputXmlPath;
+                    // 設定ファイルへ保存
+                    Properties.Settings.Default.LastOutputPath = _outputXmlPath;
+                    Properties.Settings.Default.Save();
                     // コントロール状態の更新
                     UpdateControlEnabled();
                 }
